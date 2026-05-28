@@ -162,7 +162,7 @@ def call_openai(
 
 
 @observe()
-def compare_models(prompt: str) -> dict:
+def compare_models(prompt: str) -> dict[str, LLMResponse]:
     """
     Compare responses from Claude and OpenAI for the same prompt.
     Each call becomes a child span in the trace.
@@ -188,12 +188,14 @@ if __name__ == "__main__":
     response = compare_models("Explain the theory of relativity in simple terms.")
 
     # print(f"Response: {response.content}")
-    print(f"Response: {response}")
-    print(
-        f"Tokens: {response.claude.input_tokens} in, {response.claude.output_tokens} out"
-    )
-    print(f"Cost: ${response.claude.cost:.6f}")
-    print(f"Duration: {response.claude.duration_ms:.0f}ms")
+    for model in response.keys():
+        print(f"{model}:")
+        print(f"Response: {response[model]}")
+        print(
+            f"Tokens: {response[model].input_tokens} in, {response[model].output_tokens} out"
+        )
+        print(f"Cost: ${response[model].cost:.6f}")
+        print(f"Duration: {response[model].duration_ms:.0f}ms")
 
     # IMPORTANT: Always flush in short-lived scripts to ensure data is sent
     langfuse.flush()
